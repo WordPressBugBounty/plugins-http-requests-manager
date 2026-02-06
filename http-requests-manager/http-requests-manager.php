@@ -4,7 +4,7 @@
   Plugin Name: HTTP Requests Manager
   Plugin URI:   https://veppa.com/http-requests-manager/
   Description: Limit, Debug, Optimize WP_HTTP requests. Limit by request count, page load time, reduce timeout for each request. Speed up login and admin pages.
-  Version: 1.3.8
+  Version: 1.3.9
   Author: veppa
   Author URI: https://veppa.com/
   Text Domain:	http-requests-manager
@@ -31,6 +31,13 @@
 /**
  *  
  * TODO:
+ * 
+ * - when allow everywhere do not log allowed cron jobs. because it will overload reports.
+ * - add easier blocking
+ * - need to do something with smart block. eather add manual or 
+ * 
+ * 
+ * 
   - add blocking by theme
   - add blocking by core function
   - safe-mode: show instruction about safe mode and operation mode on beginning. after dismissed move note to bottom.
@@ -75,7 +82,7 @@ defined('ABSPATH') or exit;
 class HTTP_Requests_Manager
 {
 
-    const VERSION = '1.3.8';
+    const VERSION = '1.3.9';
     const ID = 'http-requests-manager';
     const TIMEOUT = 2;
     const DATA_TRUNCATE_LIMIT = 5000; // truncate response data if bigger than 6kb.  should always be (limit>=value)
@@ -1182,7 +1189,7 @@ class HTTP_Requests_Manager
         return count(self::$requests);
     }
 
-    function request_log($url, $stream = null)
+    function request_log($url, $args = array())
     {
         $row = array(
             'url'        => $url,
@@ -1190,9 +1197,9 @@ class HTTP_Requests_Manager
             'total_time' => self::timer_float()
         );
 
-        if ($stream)
+        if (!empty($args['stream']))
         {
-            $row['stream'] = $stream;
+            $row['stream'] = $args['stream'];
         }
 
         if (!empty(self::$request_action))
@@ -1447,7 +1454,7 @@ class HTTP_Requests_Manager
 
         // count current request 
         // capture request to apply request limits even if not logging.
-        $this->request_log($url, $args['stream']);
+        $this->request_log($url, $args);
 
         // show nonempty url for checkpoint. if url empty use original url.
         $url_cp = empty($url) ? '[empty] ' . (!empty($args['_info']['request_url_original']) ? $args['_info']['request_url_original'] : '') : $url;
