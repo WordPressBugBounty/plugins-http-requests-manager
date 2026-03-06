@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/donate/?hosted_button_id=LZ4LP4MQJDH7Y
 Tags: wp_http, log, debug, optimization, limit
 Requires at least: 4.7
 Tested up to: 6.9
-Stable tag: 1.3.9
+Stable tag: 1.3.10
 License: GPLv2
 
 Limit, Debug, Optimize WP_HTTP requests. Limit by request count, page load time, reduce timeout for each request. Speed up login and admin pages.
@@ -199,6 +199,11 @@ You will most likely feel speed difference in admin area. Pages previously loadi
 
 == Changelog ==
 
+
+
+= 1.3.10 - 6 March 2026  =
+
+  * Fixed: calling 'action' array key without checking existence. 
 
 = 1.3.9 - 5 November 2025  =
 

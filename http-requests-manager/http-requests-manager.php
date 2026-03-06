@@ -4,7 +4,7 @@
   Plugin Name: HTTP Requests Manager
   Plugin URI:   https://veppa.com/http-requests-manager/
   Description: Limit, Debug, Optimize WP_HTTP requests. Limit by request count, page load time, reduce timeout for each request. Speed up login and admin pages.
-  Version: 1.3.9
+  Version: 1.3.10
   Author: veppa
   Author URI: https://veppa.com/
   Text Domain:	http-requests-manager
@@ -82,7 +82,7 @@ defined('ABSPATH') or exit;
 class HTTP_Requests_Manager
 {
 
-    const VERSION = '1.3.9';
+    const VERSION = '1.3.10';
     const ID = 'http-requests-manager';
     const TIMEOUT = 2;
     const DATA_TRUNCATE_LIMIT = 5000; // truncate response data if bigger than 6kb.  should always be (limit>=value)
@@ -366,7 +366,7 @@ class HTTP_Requests_Manager
 
     function settings_page()
     {
-        include( VPHRM_DIR . '/templates/page-settings.php' );
+        include(VPHRM_DIR . '/templates/page-settings.php');
     }
 
     function admin_notice_show()
@@ -1286,7 +1286,7 @@ class HTTP_Requests_Manager
         $home_host = self::parse_url_host(get_option('siteurl'));
 
         // Don't block requests back to ourselves by default.
-        return ('localhost' === $host || $home_host === $host );
+        return ('localhost' === $host || $home_host === $host);
     }
 
     static public function is_url_internal_cron($url)
@@ -1508,7 +1508,7 @@ class HTTP_Requests_Manager
             'url'            => $url,
             'request_args'   => self::json_encode($args),
             'response'       => self::json_encode($arr_response),
-            'runtime'        => ( microtime(true) - $this->start_time ),
+            'runtime'        => (microtime(true) - $this->start_time),
             'date_added'     => current_time('mysql'),
             'page_id'        => self::$page_id,
             'request_status' => self::db_truncate_field(self::current_request_status($arr_response), 20),
@@ -1775,7 +1775,7 @@ class HTTP_Requests_Manager
     static public function time_since($time)
     {
         $time = current_time('timestamp') - strtotime($time);
-        $time = ( $time < 1 ) ? 1 : $time;
+        $time = ($time < 1) ? 1 : $time;
         $tokens = array(
             31536000 => 'year',
             2592000  => 'month',
@@ -1791,7 +1791,7 @@ class HTTP_Requests_Manager
             if ($time < $unit)
                 continue;
             $numberOfUnits = floor($time / $unit);
-            return $numberOfUnits . ' ' . $text . ( ( $numberOfUnits > 1 ) ? 's' : '' );
+            return $numberOfUnits . ' ' . $text . (($numberOfUnits > 1) ? 's' : '');
         }
     }
 
@@ -2682,7 +2682,7 @@ class HTTP_Requests_Manager
 
         if (is_null($return))
         {
-            if (is_null($return) && ( (function_exists('wp_doing_cron') && wp_doing_cron()) || (defined('DOING_CRON') && DOING_CRON)))
+            if (is_null($return) && ((function_exists('wp_doing_cron') && wp_doing_cron()) || (defined('DOING_CRON') && DOING_CRON)))
             {
                 $return = 'cron';
             }
@@ -2693,12 +2693,12 @@ class HTTP_Requests_Manager
             }
 
             // is REST API endpoint 
-            if (is_null($return) && ((defined('REST_REQUEST') && REST_REQUEST ) || !empty($GLOBALS['wp']->query_vars['rest_route'])))
+            if (is_null($return) && ((defined('REST_REQUEST') && REST_REQUEST) || !empty($GLOBALS['wp']->query_vars['rest_route'])))
             {
                 $return = 'rest_api';
             }
 
-            if (is_null($return) && (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST ))
+            if (is_null($return) && (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST))
             {
                 $return = 'xmlrpc';
             }
@@ -2956,7 +2956,14 @@ class HTTP_Requests_Manager
         if (is_null($return))
         {
             // store sanitized value 
-            $return = strtolower(sanitize_text_field($_REQUEST['action']));
+            if (isset($_REQUEST['action']))
+            {
+                $return = strtolower(sanitize_text_field($_REQUEST['action']));
+            }
+            else
+            {
+                $return = '';
+            }
         }
 
         return $return;
@@ -3149,7 +3156,7 @@ class HTTP_Requests_Manager
         $order = in_array($args['order'], ['ASC', 'DESC']) ? $args['order'] : 'DESC';
         $page = intval($args['page']) < 1 ? 1 : intval($args['page']);
         $per_page = intval($args['per_page']) < 5 ? 5 : intval($args['per_page']);
-        $limit = ( ( $page - 1 ) * $per_page ) . ',' . $per_page;
+        $limit = (($page - 1) * $per_page) . ',' . $per_page;
         $orderby_extra = $orderby !== 'id' ? ', id DESC' : '';
 
         /*
@@ -3356,13 +3363,13 @@ class HTTP_Requests_Manager
             {
                 $output .= '<a class="vphrm-page first-page" data-page="1">&lt;&lt;</a>';
             }
-            if (1 < ( $page - 10 ))
+            if (1 < ($page - 10))
             {
                 $output .= '<a class="vphrm-page" data-page="' . ($page - 10) . '">' . ($page - 10) . '</a>';
             }
             for ($i = 2; $i > 0; $i--)
             {
-                if (0 < ( $page - $i ))
+                if (0 < ($page - $i))
                 {
                     $output .= '<a class="vphrm-page" data-page="' . ($page - $i) . '">' . ($page - $i) . '</a>';
                 }
@@ -3373,16 +3380,16 @@ class HTTP_Requests_Manager
 
             for ($i = 1; $i <= 2; $i++)
             {
-                if ($total_pages >= ( $page + $i ))
+                if ($total_pages >= ($page + $i))
                 {
                     $output .= '<a class="vphrm-page" data-page="' . ($page + $i) . '">' . ($page + $i) . '</a>';
                 }
             }
-            if ($total_pages > ( $page + 10 ))
+            if ($total_pages > ($page + 10))
             {
                 $output .= '<a class="vphrm-page" data-page="' . ($page + 10) . '">' . ($page + 10) . '</a>';
             }
-            if ($total_pages > ( $page + 2 ))
+            if ($total_pages > ($page + 2))
             {
                 $output .= '<a class="vphrm-page last-page" data-page="' . $total_pages . '">&gt;&gt;</a>';
             }
@@ -3404,7 +3411,7 @@ class HTTP_Requests_Manager
                 // remove old table 
                 self::db_drop_table();
 
-                require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+                require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
                 $this->db_upgrade_clean_install();
             }
@@ -3548,7 +3555,7 @@ class HTTP_Requests_Manager
 
         if (version_compare($db_version, '1.3.5', '<'))
         {
-            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
             // increase request_source varchar length to 255
             // ALTER TABLE `wp_vphrm_log` CHANGE `request_source` `request_source` varchar(255);
@@ -3631,9 +3638,9 @@ class HTTP_Requests_Manager
     static public function nice_bytes($bytes)
     {
         $label = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
-        for ($i = 0; $bytes >= 1024 && $i < ( count($label) - 1 ); $bytes /= 1024, $i++)
+        for ($i = 0; $bytes >= 1024 && $i < (count($label) - 1); $bytes /= 1024, $i++)
             ;
-        return( round($bytes, 2) . " " . $label[$i] );
+        return(round($bytes, 2) . " " . $label[$i]);
     }
 
     static public function translate($text)
